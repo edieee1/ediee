@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+   <style>
+    body {
+        background: linear-gradient(to bottom, #4facfe, #00f2fe);
+        margin: 0;
+        padding: 0;
+      }
+  .centered-form {
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* This ensures the form is vertically centered */
+  }
+
+  form {
+    text-align: center; /* This centers the form contents */
+  }
+</style>
+</head>
+<body>
+
+<div class="centered-form">
+  <form>
+    <label for="fname">name:</label><br />
+    <input type="text" id="fname" name="Name" /><br />
+
+    
+     <div class="tongue-twister">
+      <p>Drop your greatest secret!</p>
+    </div>
+
+    <button
+      type="button"
+      id="toggleSpeech"
+      onclick="toggleSpeechRecognition()"
+    >
+      Send
+    </button>
+  </form>
+</div>
+    <p id="testMessage"></p>
+    <script
+      type="text/javascript"
+      src="https://cdn.emailjs.com/dist/email.min.js"
+    ></script>
+
+    <script type="text/javascript">
+      (function () {
+        emailjs.init("RbhgPuZ9xO5IZYFxg"); // Initialize EmailJS with your user ID
+      })();
+
+      var recognition = new (window.SpeechRecognition ||
+        window.webkitSpeechRecognition ||
+        window.mozSpeechRecognition ||
+        window.msSpeechRecognition)();
+
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 5;
+
+      var recognitionActive = false;
+
+      recognition.onresult = function (event) {
+        var transcript = event.results[0][0].transcript;
+        console.log("You said: ", transcript);
+
+        // Retrieve values from input fields
+        var name = document.getElementById("fname").value;
+       
+
+        // Send the transcript via EmailJS
+        var templateParams = {
+          message: transcript,
+          from_name: name,
+        
+        };
+
+        // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with actual values
+        emailjs
+          .send("service_u63fsee", "template_62dg9qi", templateParams)
+          .then(
+            function (response) {
+              document.getElementById("testMessage").innerHTML = transcript;
+              console.log("Email sent successfully:", response);
+            },
+            function (error) {
+              document.getElementById("testMessage").innerHTML =
+                "Error sending email";
+              console.error("Email sending failed:", error);
+            }
+          );
+      };
+
+      // Function to toggle speech recognition
+      function toggleSpeechRecognition() {
+        if (!recognitionActive) {
+          recognition.start();
+          recognitionActive = true;
+          document.getElementById("toggleSpeech").textContent = "Send";
+          console.log("Listening for speech...");
+        } else {
+          recognition.stop();
+          recognitionActive = false;
+          document.getElementById("toggleSpeech").textContent =
+            "Send";
+          console.log("Speech recognition stopped.");
+
+           // Display a random score between 80 and 99
+          var randomScore = Math.floor(Math.random() * 20) + 80;
+          document.getElementById("scoreDisplay").textContent =
+            "Your score: " + randomScore;
+        }
+      }
+    </script>
+  </body>
+</html>
